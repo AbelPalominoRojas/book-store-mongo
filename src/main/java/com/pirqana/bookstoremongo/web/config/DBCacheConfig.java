@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Collections;
 
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class DBCacheConfig {
     public static final String CACHE_NAME = "peticiones";
 

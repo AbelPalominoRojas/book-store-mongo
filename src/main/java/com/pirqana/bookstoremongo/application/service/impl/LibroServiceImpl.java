@@ -6,6 +6,7 @@ import com.pirqana.bookstoremongo.application.service.LibroService;
 import com.pirqana.bookstoremongo.domain.entity.Libro;
 import com.pirqana.bookstoremongo.infrastructure.repository.LibroRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,12 +20,14 @@ public class LibroServiceImpl implements LibroService {
     private LibroMapper libroMapper;
 
     @Override
+    @Cacheable(value = "libros")
     public List<LibroDto> findAll() {
         List<Libro> libros = libroRepository.findAll();
         return libroMapper.toLibroDtos(libros);
     }
 
     @Override
+    @Cacheable(value = "libros", key = "#id")
     public Optional<LibroDto> findById(String id) throws Exception {
         var libro = libroRepository.findById(id).map(l -> libroMapper.toLibroDto(l));
         return Optional.of(libro)

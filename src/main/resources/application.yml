@@ -5,3 +5,5 @@ spring:
       host: localhost
       port: 27017
       database: bookstoredb
+  cache:
+    type: redis

@@ -2,8 +2,10 @@ package com.pirqana.bookstoremongo.application.dto.editorial;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class EditorialDto {
+public class EditorialDto implements Serializable {
     private String id;
 
     private String codigo;

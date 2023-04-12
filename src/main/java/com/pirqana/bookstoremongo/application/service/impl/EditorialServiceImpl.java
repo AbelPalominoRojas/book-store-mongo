@@ -10,6 +10,7 @@ import com.pirqana.bookstoremongo.infrastructure.repository.EditorialRepository;
 import com.pirqana.bookstoremongo.web.config.DBCacheConfig;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,15 @@ public class EditorialServiceImpl implements EditorialService {
     private EditorialSaveMapper editorialSaveMapper;
 
     @Override
-    @Cacheable(value = DBCacheConfig.CACHE_NAME)
+    // @Cacheable(value = DBCacheConfig.CACHE_NAME)
+    @Cacheable(value = "editoriales")
     public List<EditorialDto> findAll() {
         List<Editorial> editoriales = editorialRepository.findByEstadoOrderByIdDesc(1).get();
         return editorialMapper.toEditorialDtos(editoriales);
     }
 
     @Override
+    @Cacheable(value = "editoriales", key = "#id")
     public Optional<EditorialDto> findById(String id) throws Exception {
         return Optional.ofNullable(editorialRepository.findById(id)
                 .map(editorial -> editorialMapper.toEditorialDto(editorial))
@@ -43,6 +46,7 @@ public class EditorialServiceImpl implements EditorialService {
     }
 
     @Override
+    @CacheEvict(value = "editoriales", allEntries = true)
     public EditorialDto create(EditorialSaveDto editorialSaveDto) {
         Editorial editorial = editorialSaveMapper.toEditorial(editorialSaveDto);
 
@@ -54,6 +58,7 @@ public class EditorialServiceImpl implements EditorialService {
     }
 
     @Override
+    @CacheEvict(value = "editoriales", allEntries = true)
     public EditorialDto edit(String id, EditorialSaveDto editorialSaveDto) throws Exception {
         Editorial editorialDb = editorialRepository.findById(id)
                 .orElseThrow(() -> new Exception("Editorial no se encontro para el id: " + id));
@@ -67,7 +72,8 @@ public class EditorialServiceImpl implements EditorialService {
     }
 
     @Override
-    @CacheEvict(cacheNames = DBCacheConfig.CACHE_NAME, allEntries = true)
+    // @CacheEvict(cacheNames = DBCacheConfig.CACHE_NAME, allEntries = true)
+    @CacheEvict(value = "editoriales", allEntries = true)
     public EditorialDto disable(String id) throws Exception {
         Editorial editorial = editorialRepository.findById(id)
                 .orElseThrow(() -> new Exception("Editorial no se encontro para el id: " + id));
