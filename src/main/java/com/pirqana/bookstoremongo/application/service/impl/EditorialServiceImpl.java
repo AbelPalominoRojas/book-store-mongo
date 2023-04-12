@@ -7,7 +7,10 @@ import com.pirqana.bookstoremongo.application.dto.editorial.mapper.EditorialSave
 import com.pirqana.bookstoremongo.application.service.EditorialService;
 import com.pirqana.bookstoremongo.domain.entity.Editorial;
 import com.pirqana.bookstoremongo.infrastructure.repository.EditorialRepository;
+import com.pirqana.bookstoremongo.web.config.DBCacheConfig;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ public class EditorialServiceImpl implements EditorialService {
     private EditorialSaveMapper editorialSaveMapper;
 
     @Override
+    @Cacheable(value = DBCacheConfig.CACHE_NAME)
     public List<EditorialDto> findAll() {
         List<Editorial> editoriales = editorialRepository.findByEstadoOrderByIdDesc(1).get();
         return editorialMapper.toEditorialDtos(editoriales);
@@ -63,6 +67,7 @@ public class EditorialServiceImpl implements EditorialService {
     }
 
     @Override
+    @CacheEvict(cacheNames = DBCacheConfig.CACHE_NAME, allEntries = true)
     public EditorialDto disable(String id) throws Exception {
         Editorial editorial = editorialRepository.findById(id)
                 .orElseThrow(() -> new Exception("Editorial no se encontro para el id: " + id));
